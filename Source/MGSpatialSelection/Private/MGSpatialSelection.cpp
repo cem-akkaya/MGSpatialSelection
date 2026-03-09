@@ -1,12 +1,17 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MGSpatialSelection.h"
+#include "Interfaces/IPluginManager.h"
+#include "ShaderCore.h"
 
 #define LOCTEXT_NAMESPACE "FMGSpatialSelectionModule"
 
 void FMGSpatialSelectionModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+
+	FString ShaderDir = FPaths::Combine(IPluginManager::Get().FindPlugin(TEXT("MGSpatialSelection"))->GetBaseDir(), TEXT("Shaders"));
+	AddShaderSourceDirectoryMapping(TEXT("/Plugin/MGSpatialSelection"), ShaderDir);
 }
 
 void FMGSpatialSelectionModule::ShutdownModule()

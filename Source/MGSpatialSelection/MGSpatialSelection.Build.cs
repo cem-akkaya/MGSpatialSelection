@@ -43,7 +43,10 @@ public class MGSpatialSelection : ModuleRules
 				"SlateCore", 
 				"InputCore",
 				"EnhancedInput",
-				"GeometryFramework",
+				"RenderCore",
+				"RHI",
+				"Renderer",
+				"Projects"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -251,6 +251,12 @@ void UMGSpatialSelectionComponent::HandleActorLeft(AActor* Actor)
 	bSelectionChanged = true;
 }
 
+void UMGSpatialSelectionComponent::RenderShaper(FRDGBuilder& GraphBuilder, const FSceneView& View, const FMGSpatialSelectionShaderParameters& Params)
+{
+	// This will be implemented when we integrate with a SceneViewExtension or a PostProcess pass
+	// For now, it's a placeholder for the RDG integration
+}
+
 bool UMGSpatialSelectionComponent::CanSpawn() const
 {
 	if (SelectionActor != nullptr)

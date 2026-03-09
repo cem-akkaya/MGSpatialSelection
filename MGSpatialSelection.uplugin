@@ -17,18 +17,10 @@
 		{
 			"Name": "MGSpatialSelection",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PostConfigInit"
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "GeometryProcessing",
-			"Enabled": true
-		},
-		{
-			"Name": "GeometryScripting",
-			"Enabled": true
-		},
 		{
 			"Name": "EnhancedInput",
 			"Enabled": true

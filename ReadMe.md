@@ -31,6 +31,7 @@ If you want to contribute, feel free to create a pull request.
 - **High-Performance Selection**: Uses native `UBoxComponent` for efficient overlap detection.
 - **Dynamic Bounds**: Real-time calculation of selection center and extent based on cursor position.
 - **Surface Grid Detection**: Built-in raycast system to find ground/surface points within the selection area.
+- **RDG Shader Integration**: Groundwork for Render Graph-based projection using custom `.usf` shaders.
 - **Enhanced Input Integration**: Ready-to-use with Unreal Engine's Enhanced Input system.
 - **Interface-Driven Interaction**: Easily filter selectable actors using the `IMGSpatialSelectionInterface`.
 - **Batch Processing**: Smart event broadcasting to prevent redundant updates (avoiding 2x trigger issues).
@@ -83,9 +84,63 @@ Install it like any other Unreal Engine plugin.
 
 ---
 
-## Support & Contact
+## Shader Integration (WIP)
 
-If you encounter any issues or have questions:
-- **GitHub Issues**: [Open an issue](https://github.com/cem-akkaya/MGSpatialSelection/issues)
-- **Website**: [cemakkaya.com](https://www.cemakkaya.com)
-- **Email**: [Contact Me](https://github.com/cem-akkaya)
+The plugin now includes the foundation for GPU-accelerated selection visualization using the **Render Graph (RDG)**:
+
+- **Shader Source**: Custom `.usf` files are mapped to `/Plugin/MGSpatialSelection/`.
+- **Global Shaders**: `FMGSpatialSelectionVS` and `FMGSpatialSelectionPS` are available for custom drawing passes.
+- **Data Transfer**: `SurfacePoints` (TArray of world positions) are prepared for transfer to a `StructuredBuffer` on the GPU.
+- **Selection State**: The `EMGSelectionState` is passed to shaders to allow dynamic visual changes between "Selecting" and "Finished" states.
+
+---
+
+## FAQ
+
+<details>
+<summary><b>How are the surface points calculated?</b></summary>
+
+The component performs a vertical line trace (raycast) for each cell in a 2D grid defined by the `GridDensity` setting. It starts from the top of the selection volume and traces downwards to find the world geometry.
+
+</details>
+
+<details>
+<summary><b>Can I change the selection height?</b></summary>
+
+Yes. The `SelectionHeight` property on the `UMGSpatialSelectionComponent` determines the vertical extent of the selection volume. This is useful for selecting units on different elevation levels.
+
+</details>
+
+<details>
+<summary><b>Does it support multi-select?</b></summary>
+
+Yes. The system tracks all actors that enter the selection volume and implement the `IMGSpatialSelectionInterface`. It broadcasts the full list via `OnSelectionUpdated`.
+
+</details>
+
+---
+
+## Known Limitations / Tips
+
+- **Grid Density Performance**: High `GridDensity` values (low step size) increase the number of raycasts per frame. Balance density with performance based on your terrain complexity.
+- **Interface Requirement**: Actors **must** implement `IMGSpatialSelectionInterface` to be detected by the system.
+- **Collision Channels**: Ensure your `TraceChannel` and `CollisionChannels` are correctly configured in the component to match your world geometry and units.
+- **One-Frame Latency**: When using RDG for rendering, there is typically a one-frame delay between CPU data generation and GPU execution.
+
+## License
+
+This plugin is under the [MIT License](LICENSE).
+
+MIT License does allow commercial use. You can use, modify, and distribute the software in a commercial product without any restrictions.
+
+However, you must include the original copyright notice and disclaimers.
+
+---
+
+## Support Me
+
+If you like the plugin, you can support my work here:
+
+<a href="https://www.buymeacoffee.com/akkayaceq" target="_blank">
+<img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174">
+</a>
