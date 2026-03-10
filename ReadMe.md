@@ -1,8 +1,8 @@
 ﻿# MG Spatial Selection Plugin
 
-[![Plugin version number](https://img.shields.io/github/v/release/cem-akkaya/MGSpatialSelection?label=Version)](https://github.com/cem-akkaya/MGSpatialSelection/releases/latest)
+![GitHub Release](https://img.shields.io/github/v/release/cem-akkaya/MGSpatialSelection)
 [![Unreal Engine Supported Versions](https://img.shields.io/badge/Unreal_Engine-5.7-9455CE?logo=unrealengine)](https://github.com/cem-akkaya/MGSpatialSelection/releases)
-[![License](https://img.shields.io/github/license/cem-akkaya/MGSpatialSelection)](LICENSE)
+![GitHub License](https://img.shields.io/github/license/cem-akkaya/MGSpatialSelection?label=License)
 [![Actively Maintained](https://img.shields.io/badge/Maintenance%20Level-Actively%20Maintained-green.svg)](https://gist.github.com/cheerfulstoic/d107229326a01ff0f333a1d3476e068d)
 
 <img src="Resources/Splash.jpg" alt="plugin-spatial-selection" width="100%"/>
@@ -19,9 +19,6 @@ By moving the heavy lifting to the GPU and using Unreal's native collision for d
 The system is ideal for strategy games, editor tools, or any application requiring precise volume selection. It is fully integrated with Unreal's Material Editor through a custom C++ Material Expression (`MG Selection Mask`), providing a pixel-perfect, terrain-aware selection highlight that follows ground contours without any expensive CPU raycasts.
 
 Integration is straightforward: attach the component to your character or player controller, define your collision channels, and implement the selection interface on any actor you wish to detect.
-
-A demo project showcasing the selection system in action can be found below.  
-[MG Spatial Selection Demo UE5 Project](https://github.com/cem-akkaya/MGSpatialSelectionDemo)
 
 If you have any bug or crash, please open an issue in the GitHub repo.  
 If you have suggestions, questions or need help, you can always contact [me](https://github.com/cem-akkaya)
