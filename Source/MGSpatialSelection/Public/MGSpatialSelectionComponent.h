@@ -71,19 +71,28 @@ protected:
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TArray<TEnumAsByte<ECollisionChannel>> CollisionChannels;
 
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	float SelectionHeight = 500.f;
 
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	TObjectPtr<UMaterialParameterCollection> SelectionMPC;
+
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	FString SelectionCenterParameterName = TEXT("SelectionCenter");
+
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	FString SelectionExtentParameterName = TEXT("SelectionExtent");
+
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
 	TObjectPtr<UInputAction> SelectionAction;
 
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
 	bool bShowDebug = true;
 
 public:

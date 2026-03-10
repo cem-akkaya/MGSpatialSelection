@@ -11,6 +11,7 @@
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
+#include "UObject/ConstructorHelpers.h"
 
 UMGSpatialSelectionComponent::UMGSpatialSelectionComponent()
 {
@@ -20,6 +21,12 @@ UMGSpatialSelectionComponent::UMGSpatialSelectionComponent()
 	CollisionChannels.Add(ECC_Pawn);
 	CollisionChannels.Add(ECC_WorldDynamic);
 	CollisionChannels.Add(ECC_PhysicsBody);
+
+	static ConstructorHelpers::FObjectFinder<UMaterialParameterCollection> DefaultMPC(TEXT("/MGSpatialSelection/MGSpatialSelection_MPC.MGSpatialSelection_MPC"));
+	if (DefaultMPC.Succeeded())
+	{
+		SelectionMPC = DefaultMPC.Object;
+	}
 }
 
 void UMGSpatialSelectionComponent::BeginPlay()
@@ -147,8 +154,14 @@ void UMGSpatialSelectionComponent::UpdateSelection()
 		SelectionActor->UpdateBounds(Hit.Location);
 
 		// Update Material Parameter Collection
-		FVector Center = SelectionActor->GetActorLocation();
-		FVector Extent = SelectionActor->GetSelectionBoxExtent();
+		if (SelectionMPC)
+		{
+			FVector Center = SelectionActor->GetActorLocation();
+			FVector Extent = SelectionActor->GetSelectionBoxExtent();
+
+			UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionCenterParameterName), FLinearColor(Center));
+			UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionExtentParameterName), FLinearColor(Extent));
+		}
 	}
 }
 
