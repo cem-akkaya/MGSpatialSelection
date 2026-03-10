@@ -1,4 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
+﻿// MG Spatial Selection System by Cem Akkaya https://www.cemakkaya.com
 
 #pragma once
 
