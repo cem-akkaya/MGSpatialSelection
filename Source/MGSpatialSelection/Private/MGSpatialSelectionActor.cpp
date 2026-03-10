@@ -84,6 +84,11 @@ void AMGSpatialSelectionActor::UpdateBounds(const FVector& CurrentWorldPos)
 	}
 }
 
+FVector AMGSpatialSelectionActor::GetSelectionBoxExtent() const
+{
+	return SelectionBox ? SelectionBox->GetUnscaledBoxExtent() : FVector::ZeroVector;
+}
+
 void AMGSpatialSelectionActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	OnActorEntered.Broadcast(OtherActor);

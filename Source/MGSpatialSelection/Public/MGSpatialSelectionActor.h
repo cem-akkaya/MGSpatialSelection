@@ -25,6 +25,8 @@ public:
 
 	void UpdateBounds(const FVector& CurrentWorldPos);
 
+	FVector GetSelectionBoxExtent() const;
+
 	UPROPERTY()
 	FOnSelectionActorEvent OnActorEntered;
 

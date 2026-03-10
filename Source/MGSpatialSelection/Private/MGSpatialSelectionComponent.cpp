@@ -4,7 +4,9 @@
 #include "MGSpatialSelectionActor.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMaterialLibrary.h"
+#include "Materials/MaterialParameterCollection.h"
+#include "Materials/MaterialParameterCollectionInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
@@ -18,8 +20,6 @@ UMGSpatialSelectionComponent::UMGSpatialSelectionComponent()
 	CollisionChannels.Add(ECC_Pawn);
 	CollisionChannels.Add(ECC_WorldDynamic);
 	CollisionChannels.Add(ECC_PhysicsBody);
-
-	GridDensity = 100.f;
 }
 
 void UMGSpatialSelectionComponent::BeginPlay()
@@ -146,41 +146,9 @@ void UMGSpatialSelectionComponent::UpdateSelection()
 		}
 		SelectionActor->UpdateBounds(Hit.Location);
 
-		// Update Surface Points
-		SurfacePoints.Empty();
-		
-		FVector Start = SelectionActor->GetActorLocation();
-		FVector Extent = SelectionActor->GetComponentsBoundingBox().GetExtent();
-		
-		FVector Min = Start - Extent;
-		FVector Max = Start + Extent;
-
-		float Step = FMath::Max(GridDensity, 10.f);
-
-		for (float x = Min.X; x <= Max.X; x += Step)
-		{
-			for (float y = Min.Y; y <= Max.Y; y += Step)
-			{
-				FVector RayStart(x, y, Max.Z + 100.f);
-				FVector RayEnd(x, y, Min.Z - 100.f);
-
-				FHitResult GridHit;
-				FCollisionQueryParams Params;
-				Params.AddIgnoredActor(SelectionActor);
-				Params.AddIgnoredActor(GetOwner());
-
-				if (GetWorld()->LineTraceSingleByChannel(GridHit, RayStart, RayEnd, TraceChannel, Params))
-				{
-					SurfacePoints.Add(GridHit.Location);
-					
-					if (bShowDebug)
-					{
-						DrawDebugLine(GetWorld(), RayStart, GridHit.Location, FColor::White, false, -1.0f, 0, 0.5f);
-						DrawDebugPoint(GetWorld(), GridHit.Location, 5.0f, FColor::Black, false, -1.0f);
-					}
-				}
-			}
-		}
+		// Update Material Parameter Collection
+		FVector Center = SelectionActor->GetActorLocation();
+		FVector Extent = SelectionActor->GetSelectionBoxExtent();
 	}
 }
 

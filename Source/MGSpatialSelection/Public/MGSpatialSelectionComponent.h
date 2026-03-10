@@ -78,9 +78,6 @@ public:
 	float SelectionHeight = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
-	float GridDensity = 100.f;
-
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Settings")
@@ -108,9 +105,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "MG Spatial Selection|State")
 	TArray<AActor*> CurrentSelectedActors;
-
-	UPROPERTY(BlueprintReadOnly, Category = "MG Spatial Selection|State")
-	TArray<FVector> SurfacePoints;
 
 
 protected:

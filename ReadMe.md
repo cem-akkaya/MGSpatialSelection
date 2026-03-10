@@ -30,12 +30,12 @@ If you want to contribute, feel free to create a pull request.
 
 - **High-Performance Selection**: Uses native `UBoxComponent` for efficient overlap detection.
 - **Dynamic Bounds**: Real-time calculation of selection center and extent based on cursor position.
-- **Surface Grid Detection**: Built-in raycast system to find ground/surface points within the selection area.
+- **Terrain-Aware Visuals**: Driven by a Material Parameter Collection (MPC), allowing for performant, pixel-perfect Post-Process effects that follow terrain contours.
 - **Enhanced Input Integration**: Ready-to-use with Unreal Engine's Enhanced Input system.
 - **Interface-Driven Interaction**: Easily filter selectable actors using the `IMGSpatialSelectionInterface`.
 - **Batch Processing**: Smart event broadcasting to prevent redundant updates (avoiding 2x trigger issues).
-- **Configurable Settings**: Customizable selection height, grid density, and collision channels.
-- **Debug Visuals**: Integrated debug drawing for the selection box, cursor tracking, and grid hit points.
+- **Configurable Settings**: Customizable selection height and collision channels.
+- **Debug Visuals**: Integrated debug drawing for the selection box and cursor tracking.
 
 ---
 
@@ -47,7 +47,7 @@ If you want to contribute, feel free to create a pull request.
 
 | <img src="Resources/Demo3.gif" width="370"/> | <img src="Resources/Demo4.gif" width="370"/> |
 |:--:|:--:|
-| Surface grid raycasting finding hit points within the volume. | Integration with the MGSpatialSelectionInterface for targeted detection. |
+| Post-Process selection mask following terrain contours. | Integration with the MGSpatialSelectionInterface for targeted detection. |
 
 | <img src="Resources/Demo5.gif" width="790"/> |
 |:--:|
@@ -55,7 +55,7 @@ If you want to contribute, feel free to create a pull request.
 
 | <img src="Resources/Demo6.gif" width="790"/> |
 |:--:|
-| Debug visualization mode showing bounds, lines, and surface hit points. |
+| Debug visualization mode showing bounds and cursor tracking. |
 
 ---
 
