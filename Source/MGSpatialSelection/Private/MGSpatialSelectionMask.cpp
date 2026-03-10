@@ -30,7 +30,7 @@ int32 UMGSpatialSelectionMask::Compile(class FMaterialCompiler* Compiler, int32 
 	}
 	else
 	{
-		// 1. Get the inputs
+		//Get the inputs
 		int32 PosInput = WorldPos.Compile(Compiler);
 		int32 CenterInput = Center.Compile(Compiler);
 		int32 ExtentInput = Extent.Compile(Compiler);
@@ -42,8 +42,7 @@ int32 UMGSpatialSelectionMask::Compile(class FMaterialCompiler* Compiler, int32 
 
 		// Result = max(d.x, max(d.y, d.z)) < 0.0
 		// Extract individual components
-		// Use ComponentMask to ensure we are dealing with scalar components for Max, 
-		// but First convert Dist to float3 if it's not already, to avoid LWC issues.
+		
 		int32 DistVec = Compiler->ComponentMask(Dist, true, true, true, false); 
 		
 		int32 DX = Compiler->ComponentMask(DistVec, true, false, false, false);
@@ -53,9 +52,14 @@ int32 UMGSpatialSelectionMask::Compile(class FMaterialCompiler* Compiler, int32 
 		// Find the max of all components
 		int32 MaxD = Compiler->Max(DX, Compiler->Max(DY, DZ));
 
-		// Step(0.0, -MaxD) will return 1.0 if -MaxD >= 0 (meaning MaxD <= 0)
-		int32 NegativeMaxD = Compiler->Mul(MaxD, Compiler->Constant(-1.0f));
-		return Compiler->Step(Compiler->Constant(0.0f), NegativeMaxD);
+		// Result = MaxD <= 0 ? 1.0 : 0.0
+		// Increased falloff for better stability in jittery post-process passes
+		int32 Edge0 = Compiler->Constant(-1.0f);
+		int32 Edge1 = Compiler->Constant(1.0f);
+		
+		// smoothstep
+		int32 SmoothFactor = Compiler->SmoothStep(Edge0, Edge1, MaxD);
+		return Compiler->Sub(Compiler->Constant(1.0f), SmoothFactor);
 	}
 }
 

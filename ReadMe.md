@@ -30,7 +30,7 @@ If you want to contribute, feel free to create a pull request.
 
 - **High-Performance Selection**: Uses native `UBoxComponent` for efficient overlap detection.
 - **Dynamic Bounds**: Real-time calculation of selection center and extent based on cursor position.
-- **Terrain-Aware Visuals**: Driven by a Material Parameter Collection (MPC) and a custom C++ Material Node (`MG Selection Mask`), allowing for performant, pixel-perfect Post-Process effects that follow terrain contours.
+- **Terrain-Aware Visuals**: Driven by a Material Parameter Collection (MPC) and a custom C++ Material Node (`MG Selection Mask`), allowing for performant, pixel-perfect Post-Process effects that follow terrain contours. Supports configurable opacity and smooth decay after selection.
 - **Enhanced Input Integration**: Ready-to-use with Unreal Engine's Enhanced Input system.
 - **Interface-Driven Interaction**: Easily filter selectable actors using the `IMGSpatialSelectionInterface`.
 - **Batch Processing**: Smart event broadcasting to prevent redundant updates (avoiding 2x trigger issues).

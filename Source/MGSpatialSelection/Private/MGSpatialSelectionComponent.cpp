@@ -134,8 +134,10 @@ void UMGSpatialSelectionComponent::StartSelection()
 			DrawDebugSphere(GetWorld(), Hit.Location, 10.0f, 12, FColor::Red, false, 1.0f);
 		}
 		SpawnSelectionActor(Hit.Location);
-		SelectionState = EMGSelectionState::Selecting;
-		OnSelectionStarted.Broadcast(GetOwner());
+ 	SelectionState = EMGSelectionState::Selecting;
+ 	CurrentOpacity = SelectionOpacity;
+ 	bIsDecaying = false;
+ 	OnSelectionStarted.Broadcast(GetOwner());
 	}
 }
 
@@ -164,8 +166,13 @@ void UMGSpatialSelectionComponent::UpdateSelection()
 
 			if (bCenterChanged || bExtentChanged)
 			{
-				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionCenterParameterName), FLinearColor(Center));
-				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionExtentParameterName), FLinearColor(Extent));
+				FLinearColor CenterRounded(Center.X, Center.Y, Center.Z);
+				FLinearColor ExtentRounded(Extent.X, Extent.Y, Extent.Z);
+
+				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionCenterParameterName), CenterRounded);
+				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionExtentParameterName), ExtentRounded);
+
+				UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
 
 				LastUpdatedCenter = Center;
 				LastUpdatedExtent = Extent;
@@ -182,6 +189,17 @@ void UMGSpatialSelectionComponent::FinishSelection()
 	}
 
 	SelectionState = EMGSelectionState::Waiting;
+	bIsDecaying = (DecayTime > 0.f);
+
+	if (!bIsDecaying)
+	{
+		CurrentOpacity = 0.f;
+		if (SelectionMPC)
+		{
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
+		}
+	}
+
 	OnSelectionFinished.Broadcast(GetOwner());
 }
 
@@ -197,6 +215,28 @@ void UMGSpatialSelectionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		{
 			OnSelectionUpdated.Broadcast(CurrentSelectedActors);
 			bSelectionChanged = false;
+		}
+	}
+	else if (bIsDecaying)
+	{
+		if (DecayTime > 0.f)
+		{
+			CurrentOpacity -= (SelectionOpacity / DecayTime) * DeltaTime;
+			if (CurrentOpacity <= 0.f)
+			{
+				CurrentOpacity = 0.f;
+				bIsDecaying = false;
+			}
+		}
+		else
+		{
+			CurrentOpacity = 0.f;
+			bIsDecaying = false;
+		}
+
+		if (SelectionMPC)
+		{
+			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
 		}
 	}
 }

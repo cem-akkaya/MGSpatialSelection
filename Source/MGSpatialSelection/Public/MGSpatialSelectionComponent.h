@@ -91,12 +91,21 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	FString SelectionExtentParameterName = TEXT("SelectionExtent");
+	
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	FString SelectionOpacityParameterName = TEXT("SelectionOpacity");
+	
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	float SelectionOpacity = 1.f;
+
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
+	float DecayTime = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
 	TObjectPtr<UInputAction> SelectionAction;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
-	bool bShowDebug = true;
+	bool bShowDebug = false;
 
 public:
 
@@ -135,6 +144,12 @@ protected:
 
 	UPROPERTY()
 	FVector LastUpdatedExtent = FVector::ZeroVector;
+
+	UPROPERTY()
+	float CurrentOpacity = 1.f;
+
+	UPROPERTY()
+	bool bIsDecaying = false;
 
 	UPROPERTY()
 	APlayerController* CachedPC;
