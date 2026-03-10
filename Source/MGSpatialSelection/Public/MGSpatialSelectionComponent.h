@@ -71,39 +71,51 @@ protected:
 
 public:
 
+	/** Collision channels to check for actors during selection. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TArray<TEnumAsByte<ECollisionChannel>> CollisionChannels;
 
+	/** The vertical height of the 3D selection volume. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	float SelectionHeight = 500.f;
 
+	/** Minimum movement distance (in units) of the mouse required to trigger a visual update. Helps prevent micro-jitter. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	float UpdateThreshold = 1.0f;
 
+	/** The collision channel used to trace the ground position under the cursor. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
+	/** Material Parameter Collection to store selection bounds and opacity. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	TObjectPtr<UMaterialParameterCollection> SelectionMPC;
 
+	/** Name of the Vector parameter in the MPC that stores the selection box center. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	FString SelectionCenterParameterName = TEXT("SelectionCenter");
 
+	/** Name of the Vector parameter in the MPC that stores the selection box extent. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	FString SelectionExtentParameterName = TEXT("SelectionExtent");
 	
+	/** Name of the Scalar parameter in the MPC that stores the current selection opacity. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	FString SelectionOpacityParameterName = TEXT("SelectionOpacity");
 	
+	/** The maximum opacity of the selection box while selecting. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	float SelectionOpacity = 1.f;
 
+	/** Duration (in seconds) it takes for the selection box to fade out after the selection is complete. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
 	float DecayTime = 1.f;
 
+	/** Input Action to trigger the selection process. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
 	TObjectPtr<UInputAction> SelectionAction;
 
+	/** If true, draws the selection box using internal debug lines. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Input & Debug")
 	bool bShowDebug = false;
 

@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "MGSpatialSelection",
 	"Description": "MGSpatialSelection is a modular Unreal Engine plugin that provides terrain-aware spatial selection using world-space volumes. It enables flexible drag-selection of actors with support for filters such as class, tags, and gameplay tags, designed for RTS and tactical gameplay systems.",
-	"Category": "Other",
+	"Category": "Mono Games",
 	"CreatedBy": "Cem Akkaya",
 	"CreatedByURL": "https://www.cemakkaya.com/",
 	"DocsURL": "",
@@ -12,7 +12,7 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
-	"Installed": false,
+	"Installed": true,
 	"Modules": [
 		{
 			"Name": "MGSpatialSelection",
