@@ -27,8 +27,6 @@ public class MGSpatialSelection : ModuleRules
 			{
 				"Core",
 				"GeometryCore",
-				"DynamicMesh",
-				"GeometryScriptingCore",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -43,9 +41,6 @@ public class MGSpatialSelection : ModuleRules
 				"SlateCore", 
 				"InputCore",
 				"EnhancedInput",
-				"RenderCore",
-				"RHI",
-				"Renderer",
 				"Projects"
 				// ... add private dependencies that you statically link with here ...	
 			}

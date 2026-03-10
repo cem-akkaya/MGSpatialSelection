@@ -31,7 +31,6 @@ If you want to contribute, feel free to create a pull request.
 - **High-Performance Selection**: Uses native `UBoxComponent` for efficient overlap detection.
 - **Dynamic Bounds**: Real-time calculation of selection center and extent based on cursor position.
 - **Surface Grid Detection**: Built-in raycast system to find ground/surface points within the selection area.
-- **RDG Shader Integration**: Groundwork for Render Graph-based projection using custom `.usf` shaders.
 - **Enhanced Input Integration**: Ready-to-use with Unreal Engine's Enhanced Input system.
 - **Interface-Driven Interaction**: Easily filter selectable actors using the `IMGSpatialSelectionInterface`.
 - **Batch Processing**: Smart event broadcasting to prevent redundant updates (avoiding 2x trigger issues).
@@ -84,16 +83,6 @@ Install it like any other Unreal Engine plugin.
 
 ---
 
-## Shader Integration (WIP)
-
-The plugin now includes the foundation for GPU-accelerated selection visualization using the **Render Graph (RDG)**:
-
-- **Shader Source**: Custom `.usf` files are mapped to `/Plugin/MGSpatialSelection/`.
-- **Global Shaders**: `FMGSpatialSelectionVS` and `FMGSpatialSelectionPS` are available for custom drawing passes.
-- **Data Transfer**: `SurfacePoints` (TArray of world positions) are prepared for transfer to a `StructuredBuffer` on the GPU.
-- **Selection State**: The `EMGSelectionState` is passed to shaders to allow dynamic visual changes between "Selecting" and "Finished" states.
-
----
 
 ## FAQ
 
@@ -125,7 +114,6 @@ Yes. The system tracks all actors that enter the selection volume and implement 
 - **Grid Density Performance**: High `GridDensity` values (low step size) increase the number of raycasts per frame. Balance density with performance based on your terrain complexity.
 - **Interface Requirement**: Actors **must** implement `IMGSpatialSelectionInterface` to be detected by the system.
 - **Collision Channels**: Ensure your `TraceChannel` and `CollisionChannels` are correctly configured in the component to match your world geometry and units.
-- **One-Frame Latency**: When using RDG for rendering, there is typically a one-frame delay between CPU data generation and GPU execution.
 
 ## License
 

@@ -112,8 +112,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "MG Spatial Selection|State")
 	TArray<FVector> SurfacePoints;
 
-	/** Called on the render thread to draw the shaper */
-	void RenderShaper(class FRDGBuilder& GraphBuilder, const class FSceneView& View, const struct FMGSpatialSelectionShaderParameters& Params);
 
 protected:
 
