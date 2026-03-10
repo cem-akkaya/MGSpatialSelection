@@ -159,8 +159,17 @@ void UMGSpatialSelectionComponent::UpdateSelection()
 			FVector Center = SelectionActor->GetActorLocation();
 			FVector Extent = SelectionActor->GetSelectionBoxExtent();
 
-			UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionCenterParameterName), FLinearColor(Center));
-			UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionExtentParameterName), FLinearColor(Extent));
+			bool bCenterChanged = FVector::DistSquared(Center, LastUpdatedCenter) > FMath::Square(UpdateThreshold);
+			bool bExtentChanged = FVector::DistSquared(Extent, LastUpdatedExtent) > FMath::Square(UpdateThreshold);
+
+			if (bCenterChanged || bExtentChanged)
+			{
+				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionCenterParameterName), FLinearColor(Center));
+				UKismetMaterialLibrary::SetVectorParameterValue(GetWorld(), SelectionMPC, FName(*SelectionExtentParameterName), FLinearColor(Extent));
+
+				LastUpdatedCenter = Center;
+				LastUpdatedExtent = Extent;
+			}
 		}
 	}
 }

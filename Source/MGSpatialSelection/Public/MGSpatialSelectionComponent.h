@@ -78,6 +78,9 @@ public:
 	float SelectionHeight = 500.f;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
+	float UpdateThreshold = 1.0f;
+
+	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
@@ -126,6 +129,12 @@ protected:
 
 	UPROPERTY()
 	bool bSelectionChanged = false;
+
+	UPROPERTY()
+	FVector LastUpdatedCenter = FVector::ZeroVector;
+
+	UPROPERTY()
+	FVector LastUpdatedExtent = FVector::ZeroVector;
 
 	UPROPERTY()
 	APlayerController* CachedPC;

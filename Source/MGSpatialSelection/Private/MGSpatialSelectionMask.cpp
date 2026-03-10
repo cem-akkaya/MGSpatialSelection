@@ -42,9 +42,13 @@ int32 UMGSpatialSelectionMask::Compile(class FMaterialCompiler* Compiler, int32 
 
 		// Result = max(d.x, max(d.y, d.z)) < 0.0
 		// Extract individual components
-		int32 DX = Compiler->ComponentMask(Dist, true, false, false, false);
-		int32 DY = Compiler->ComponentMask(Dist, false, true, false, false);
-		int32 DZ = Compiler->ComponentMask(Dist, false, false, true, false);
+		// Use ComponentMask to ensure we are dealing with scalar components for Max, 
+		// but First convert Dist to float3 if it's not already, to avoid LWC issues.
+		int32 DistVec = Compiler->ComponentMask(Dist, true, true, true, false); 
+		
+		int32 DX = Compiler->ComponentMask(DistVec, true, false, false, false);
+		int32 DY = Compiler->ComponentMask(DistVec, false, true, false, false);
+		int32 DZ = Compiler->ComponentMask(DistVec, false, false, true, false);
 
 		// Find the max of all components
 		int32 MaxD = Compiler->Max(DX, Compiler->Max(DY, DZ));
