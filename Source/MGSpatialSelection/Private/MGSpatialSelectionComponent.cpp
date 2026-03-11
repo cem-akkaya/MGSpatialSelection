@@ -303,7 +303,13 @@ void UMGSpatialSelectionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	if (SelectionState == EMGSelectionState::Selecting)
 	{
 		UpdateSelection();
-		MakeScanning();
+
+		ScanTickCounter++;
+		if (ScanTickCounter >= ScanRate)
+		{
+			MakeScanning();
+			ScanTickCounter = 0;
+		}
 	}
 	else if (bIsDecaying)
 	{

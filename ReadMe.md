@@ -89,6 +89,7 @@ The `UMGSpatialSelectionComponent` provides several categories for customization
 - `CollisionChannels`: The physics channels to overlap for actor detection (e.g., Pawn, PhysicsBody).
 - `SelectionHeight`: The fixed Z-height of the selection volume.
 - `TraceChannel`: The channel used for the ground hit (cursor deprojection).
+- `ScanRate`: Controls how often the selection scanning occurs (every N ticks). Range: 1-5.
 
 #### **Material Settings**
 - `SelectionMPC`: The Material Parameter Collection to update.
