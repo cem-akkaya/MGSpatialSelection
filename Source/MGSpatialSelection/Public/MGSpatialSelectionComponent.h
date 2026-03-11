@@ -52,20 +52,24 @@ protected:
 
 	void UpdateSelection();
 
+	void MakeScanning();
+
+	void MakeRegistration(const TArray<AActor*>& OverlappingActors);
+
+	void DoDecay(float DeltaTime);
+
 	UFUNCTION()
 	void FinishSelection();
 
 	bool CanSpawn() const;
 
 	void SpawnSelectionActor(const FVector& StartWorldPos);
+	
+	void ClearCurrentSelection();
+
+	void SetSelectionState(EMGSelectionState NewState, const FVector& StartLocation = FVector::ZeroVector);
 
 	void DestroySelectionActor();
-
-	UFUNCTION()
-	void HandleActorEntered(AActor* Actor);
-
-	UFUNCTION()
-	void HandleActorLeft(AActor* Actor);
 
 	bool ShouldRegister(AActor* Actor) const;
 
@@ -137,8 +141,7 @@ public:
 	FOnSelectionUpdated OnSelectionUpdated;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MG Spatial Selection|State")
-	TArray<AActor*> CurrentSelectedActors;
-
+	TSet<AActor*> CurrentSelectedActors;
 
 protected:
 

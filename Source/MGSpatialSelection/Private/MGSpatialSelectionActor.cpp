@@ -14,9 +14,6 @@ AMGSpatialSelectionActor::AMGSpatialSelectionActor()
 	SelectionBox = CreateDefaultSubobject<UBoxComponent>("SelectionBox");
 	RootComponent = SelectionBox;
 
-	SelectionBox->OnComponentBeginOverlap.AddDynamic(this, &AMGSpatialSelectionActor::OnOverlapBegin);
-	SelectionBox->OnComponentEndOverlap.AddDynamic(this, &AMGSpatialSelectionActor::OnOverlapEnd);
-
 	SelectionBox->SetGenerateOverlapEvents(true);
 	SelectionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
@@ -87,14 +84,4 @@ void AMGSpatialSelectionActor::UpdateBounds(const FVector& CurrentWorldPos)
 FVector AMGSpatialSelectionActor::GetSelectionBoxExtent() const
 {
 	return SelectionBox ? SelectionBox->GetUnscaledBoxExtent() : FVector::ZeroVector;
-}
-
-void AMGSpatialSelectionActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	OnActorEntered.Broadcast(OtherActor);
-}
-
-void AMGSpatialSelectionActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	OnActorLeft.Broadcast(OtherActor);
 }

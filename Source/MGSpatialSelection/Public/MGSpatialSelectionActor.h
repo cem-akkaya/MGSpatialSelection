@@ -9,7 +9,6 @@
 class UMGSpatialSelectionComponent;
 class UBoxComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelectionActorEvent, AActor*, Actor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSelectionActorFinished);
 
 UCLASS()
@@ -27,22 +26,10 @@ public:
 
 	FVector GetSelectionBoxExtent() const;
 
-	UPROPERTY()
-	FOnSelectionActorEvent OnActorEntered;
-
-	UPROPERTY()
-	FOnSelectionActorEvent OnActorLeft;
+	UBoxComponent* GetSelectionBox() const { return SelectionBox; }
 
 	UPROPERTY(BlueprintAssignable)
 	FOnSelectionActorFinished OnSelectionFinished;
-
-protected:
-
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
 

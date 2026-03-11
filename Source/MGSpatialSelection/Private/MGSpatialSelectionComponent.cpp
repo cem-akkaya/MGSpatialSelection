@@ -11,6 +11,7 @@
 #include "DrawDebugHelpers.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
+#include "Components/BoxComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 UMGSpatialSelectionComponent::UMGSpatialSelectionComponent()
@@ -88,16 +89,13 @@ void UMGSpatialSelectionComponent::SpawnSelectionActor(const FVector& StartWorld
 	if (SelectionActor)
 	{
 		SelectionActor->Initialize(StartWorldPos, this);
-		SelectionActor->OnActorEntered.AddDynamic(this, &UMGSpatialSelectionComponent::HandleActorEntered);
-		SelectionActor->OnActorLeft.AddDynamic(this, &UMGSpatialSelectionComponent::HandleActorLeft);
 	}
 }
 
-void UMGSpatialSelectionComponent::DestroySelectionActor()
+void UMGSpatialSelectionComponent::ClearCurrentSelection()
 {
-	if (SelectionActor)
+	if (CurrentSelectedActors.Num() > 0)
 	{
-		// Before destroying, notify all currently selected actors that they are no longer selected
 		for (AActor* Actor : CurrentSelectedActors)
 		{
 			if (Actor)
@@ -111,10 +109,46 @@ void UMGSpatialSelectionComponent::DestroySelectionActor()
 		}
 
 		CurrentSelectedActors.Empty();
-		OnSelectionUpdated.Broadcast(CurrentSelectedActors);
+		OnSelectionUpdated.Broadcast(CurrentSelectedActors.Array());
+	}
+}
 
-		SelectionActor->OnActorEntered.RemoveDynamic(this, &UMGSpatialSelectionComponent::HandleActorEntered);
-		SelectionActor->OnActorLeft.RemoveDynamic(this, &UMGSpatialSelectionComponent::HandleActorLeft);
+void UMGSpatialSelectionComponent::SetSelectionState(EMGSelectionState NewState, const FVector& StartLocation)
+{
+	SelectionState = NewState;
+
+	switch (SelectionState)
+	{
+	case EMGSelectionState::Selecting:
+		ClearCurrentSelection();
+		SpawnSelectionActor(StartLocation);
+
+		CurrentOpacity = SelectionOpacity;
+		bIsDecaying = false;
+		OnSelectionStarted.Broadcast(GetOwner());
+		break;
+
+	case EMGSelectionState::Finished:
+	case EMGSelectionState::Waiting:
+		bIsDecaying = (DecayTime > 0.f);
+		if (!bIsDecaying)
+		{
+			CurrentOpacity = 0.f;
+			if (SelectionMPC)
+			{
+				UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
+			}
+		}
+		OnSelectionFinished.Broadcast(GetOwner());
+		break;
+	}
+}
+
+void UMGSpatialSelectionComponent::DestroySelectionActor()
+{
+	if (SelectionActor)
+	{
+		ClearCurrentSelection();
 
 		SelectionActor->Destroy();
 		SelectionActor = nullptr;
@@ -133,11 +167,8 @@ void UMGSpatialSelectionComponent::StartSelection()
 		{
 			DrawDebugSphere(GetWorld(), Hit.Location, 10.0f, 12, FColor::Red, false, 1.0f);
 		}
-		SpawnSelectionActor(Hit.Location);
- 	SelectionState = EMGSelectionState::Selecting;
- 	CurrentOpacity = SelectionOpacity;
- 	bIsDecaying = false;
- 	OnSelectionStarted.Broadcast(GetOwner());
+		
+		SetSelectionState(EMGSelectionState::Selecting, Hit.Location);
 	}
 }
 
@@ -188,19 +219,81 @@ void UMGSpatialSelectionComponent::FinishSelection()
 		DestroySelectionActor();
 	}
 
-	SelectionState = EMGSelectionState::Waiting;
-	bIsDecaying = (DecayTime > 0.f);
+	SetSelectionState(EMGSelectionState::Finished);
+}
 
-	if (!bIsDecaying)
+void UMGSpatialSelectionComponent::MakeScanning()
+{
+	if (SelectionActor && SelectionActor->GetSelectionBox())
 	{
-		CurrentOpacity = 0.f;
-		if (SelectionMPC)
+		TArray<AActor*> OverlappingActors;
+		SelectionActor->GetSelectionBox()->GetOverlappingActors(OverlappingActors);
+
+		MakeRegistration(OverlappingActors);
+	}
+}
+
+void UMGSpatialSelectionComponent::MakeRegistration(const TArray<AActor*>& OverlappingActors)
+{
+	TSet<AActor*> NewSelection;
+	for (AActor* Actor : OverlappingActors)
+	{
+		if (ShouldRegister(Actor))
 		{
-			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
+			NewSelection.Add(Actor);
 		}
 	}
 
-	OnSelectionFinished.Broadcast(GetOwner());
+	if (CurrentSelectedActors.Num() == NewSelection.Num() && CurrentSelectedActors.Includes(NewSelection))
+	{
+		return;
+	}
+
+	// Identify Added
+	for (AActor* Actor : NewSelection)
+	{
+		if (!CurrentSelectedActors.Contains(Actor))
+		{
+			IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, true);
+			OnActorSelected.Broadcast(Actor);
+		}
+	}
+
+	// Identify Removed
+	for (AActor* Actor : CurrentSelectedActors)
+	{
+		if (!NewSelection.Contains(Actor))
+		{
+			IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, false);
+			OnActorDeselected.Broadcast(Actor);
+		}
+	}
+
+	CurrentSelectedActors = MoveTemp(NewSelection);
+	OnSelectionUpdated.Broadcast(CurrentSelectedActors.Array());
+}
+
+void UMGSpatialSelectionComponent::DoDecay(float DeltaTime)
+{
+	if (DecayTime > 0.f)
+	{
+		CurrentOpacity -= (SelectionOpacity / DecayTime) * DeltaTime;
+		if (CurrentOpacity <= 0.f)
+		{
+			CurrentOpacity = 0.f;
+			bIsDecaying = false;
+		}
+	}
+	else
+	{
+		CurrentOpacity = 0.f;
+		bIsDecaying = false;
+	}
+
+	if (SelectionMPC)
+	{
+		UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
+	}
 }
 
 void UMGSpatialSelectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -210,34 +303,11 @@ void UMGSpatialSelectionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	if (SelectionState == EMGSelectionState::Selecting)
 	{
 		UpdateSelection();
-
-		if (bSelectionChanged)
-		{
-			OnSelectionUpdated.Broadcast(CurrentSelectedActors);
-			bSelectionChanged = false;
-		}
+		MakeScanning();
 	}
 	else if (bIsDecaying)
 	{
-		if (DecayTime > 0.f)
-		{
-			CurrentOpacity -= (SelectionOpacity / DecayTime) * DeltaTime;
-			if (CurrentOpacity <= 0.f)
-			{
-				CurrentOpacity = 0.f;
-				bIsDecaying = false;
-			}
-		}
-		else
-		{
-			CurrentOpacity = 0.f;
-			bIsDecaying = false;
-		}
-
-		if (SelectionMPC)
-		{
-			UKismetMaterialLibrary::SetScalarParameterValue(GetWorld(), SelectionMPC, FName(*SelectionOpacityParameterName), CurrentOpacity);
-		}
+		DoDecay(DeltaTime);
 	}
 }
 
@@ -249,38 +319,8 @@ bool UMGSpatialSelectionComponent::ShouldRegister(AActor* Actor) const
 	if (!Actor->Implements<UMGSpatialSelectionInterface>())
 		return false;
 
-	if (CurrentSelectedActors.Contains(Actor))
-		return false;
-
 	return true;
 }
-
-void UMGSpatialSelectionComponent::HandleActorEntered(AActor* Actor)
-{
-	if (!ShouldRegister(Actor))
-		return;
-
-	CurrentSelectedActors.Add(Actor);
-
-	IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, true);
-
-	OnActorSelected.Broadcast(Actor);
-	bSelectionChanged = true;
-}
-
-void UMGSpatialSelectionComponent::HandleActorLeft(AActor* Actor)
-{
-	if (!Actor || !CurrentSelectedActors.Contains(Actor))
-		return;
-
-	CurrentSelectedActors.Remove(Actor);
-
-	IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, false);
-
-	OnActorDeselected.Broadcast(Actor);
-	bSelectionChanged = true;
-}
-
 
 bool UMGSpatialSelectionComponent::CanSpawn() const
 {
