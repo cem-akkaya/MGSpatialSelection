@@ -56,6 +56,7 @@ If you want to contribute, feel free to create a pull request.
 6. **Set Up Materials**: Use the provided `MGSpatialSelection_PPM` post-process material or create your own using the `MG Selection Mask` node.
 
 ---
+<img src="Resources/Demo2.gif" alt="plugin-spatial-selection" width="100%"/>
 
 ## Detailed Integration Guide
 
