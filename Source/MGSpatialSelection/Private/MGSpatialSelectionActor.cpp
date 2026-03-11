@@ -32,6 +32,9 @@ void AMGSpatialSelectionActor::Initialize(const FVector& StartWorldPos, UMGSpati
 
 		if (SelectionBox)
 		{
+			SelectionBox->OnComponentBeginOverlap.AddDynamic(this, &AMGSpatialSelectionActor::OnOverlapBegin);
+			SelectionBox->OnComponentEndOverlap.AddDynamic(this, &AMGSpatialSelectionActor::OnOverlapEnd);
+
 			SelectionBox->SetCollisionResponseToAllChannels(ECR_Overlap);
 			SelectionBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 			SelectionBox->SetGenerateOverlapEvents(true);
@@ -84,4 +87,21 @@ void AMGSpatialSelectionActor::UpdateBounds(const FVector& CurrentWorldPos)
 FVector AMGSpatialSelectionActor::GetSelectionBoxExtent() const
 {
 	return SelectionBox ? SelectionBox->GetUnscaledBoxExtent() : FVector::ZeroVector;
+}
+
+
+void AMGSpatialSelectionActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OwnerComponent != nullptr && OtherActor != nullptr && OtherActor != this)
+	{
+		OwnerComponent->RegisterActor(OtherActor);
+	}
+}
+
+void AMGSpatialSelectionActor::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OwnerComponent != nullptr && OtherActor != nullptr && OtherActor != this)
+	{
+		OwnerComponent->UnregisterActor(OtherActor);
+	}
 }

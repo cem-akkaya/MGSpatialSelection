@@ -222,14 +222,25 @@ void UMGSpatialSelectionComponent::FinishSelection()
 	SetSelectionState(EMGSelectionState::Finished);
 }
 
-void UMGSpatialSelectionComponent::MakeScanning()
+void UMGSpatialSelectionComponent::RegisterActor(AActor* Actor)
 {
-	if (SelectionActor && SelectionActor->GetSelectionBox())
+	if (ShouldRegister(Actor) && !CurrentSelectedActors.Contains(Actor))
 	{
-		TArray<AActor*> OverlappingActors;
-		SelectionActor->GetSelectionBox()->GetOverlappingActors(OverlappingActors);
+		CurrentSelectedActors.Add(Actor);
+		IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, true);
+		OnActorSelected.Broadcast(Actor);
+		OnSelectionUpdated.Broadcast(CurrentSelectedActors.Array());
+	}
+}
 
-		MakeRegistration(OverlappingActors);
+void UMGSpatialSelectionComponent::UnregisterActor(AActor* Actor)
+{
+	if (Actor && CurrentSelectedActors.Contains(Actor))
+	{
+		CurrentSelectedActors.Remove(Actor);
+		IMGSpatialSelectionInterface::Execute_OnSelectionStatus(Actor, false);
+		OnActorDeselected.Broadcast(Actor);
+		OnSelectionUpdated.Broadcast(CurrentSelectedActors.Array());
 	}
 }
 
@@ -303,13 +314,6 @@ void UMGSpatialSelectionComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	if (SelectionState == EMGSelectionState::Selecting)
 	{
 		UpdateSelection();
-
-		ScanTickCounter++;
-		if (ScanTickCounter >= ScanRate)
-		{
-			MakeScanning();
-			ScanTickCounter = 0;
-		}
 	}
 	else if (bIsDecaying)
 	{

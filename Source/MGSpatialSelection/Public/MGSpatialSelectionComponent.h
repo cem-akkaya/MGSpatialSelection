@@ -45,14 +45,15 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void RegisterActor(AActor* Actor);
+
+	void UnregisterActor(AActor* Actor);
 protected:
 
 	UFUNCTION()
 	void StartSelection();
 
 	void UpdateSelection();
-
-	void MakeScanning();
 
 	void MakeRegistration(const TArray<AActor*>& OverlappingActors);
 
@@ -90,10 +91,6 @@ public:
 	/** The collision channel used to trace the ground position under the cursor. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
-
-	/** Controls how often the selection scanning occurs (every N ticks). Range: 1-5. */
-	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Selection Settings", meta = (ClampMin = "0", ClampMax = "5"))
-	int32 ScanRate = 0;
 
 	/** Material Parameter Collection to store selection bounds and opacity. */
 	UPROPERTY(EditAnywhere, Category = "MG Spatial Selection|Material Settings")
@@ -169,9 +166,6 @@ protected:
 
 	UPROPERTY()
 	bool bIsDecaying = false;
-
-	UPROPERTY()
-	int32 ScanTickCounter = 0;
 
 	UPROPERTY()
 	APlayerController* CachedPC;
