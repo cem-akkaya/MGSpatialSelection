@@ -7,6 +7,8 @@
 
 <img src="Resources/Splash.jpg" alt="plugin-spatial-selection" width="100%"/>
 
+## Overview
+
 MG Spatial Selection is an Unreal Engine plugin designed for high-performance, real-time spatial selection of actors within a volume.
 
 Traditional RTS selection systems often rely on costly CPU raycasts or screen-space decals that struggle with complex geometry. **MG Spatial Selection** addresses these performance bottlenecks using a high-efficiency hybrid architecture:
@@ -19,6 +21,9 @@ By moving the heavy lifting to the GPU and using Unreal's native collision for d
 The system is ideal for strategy games, editor tools, or any application requiring precise volume selection. It is fully integrated with Unreal's Material Editor through a custom C++ Material Expression (`MG Selection Mask`), providing a pixel-perfect, terrain-aware selection highlight that follows ground contours without any expensive CPU raycasts.
 
 Integration is straightforward: attach the component to your character or player controller, define your collision channels, and implement the selection interface on any actor you wish to detect.
+
+A demo with integrated plugin in action can be found below a link.
+[MG Spatial Selection Demo UE5 Project](https://github.com/cem-akkaya/MGSpatialSelectionDemo)
 
 If you have any bug or crash, please open an issue in the GitHub repo.  
 If you have suggestions, questions or need help, you can always contact [me](https://github.com/cem-akkaya)
@@ -51,7 +56,7 @@ If you want to contribute, feel free to create a pull request.
 3. **Add Component**: Add the `MGSpatialSelectionComponent` to your `PlayerController` or `Character`.
 4. **Configure Input**: 
    - Assign a **Selection Action** (Enhanced Input) in the component settings.
-   - Bind your input logic to call `StartSelection()` and `FinishSelection()` on the component.
+   - Bind your input logic to call `StartSelection()` (Pressed) and `FinishSelection()` (Released) on the component. The system handles the update logic internally during the selection state, so you don't need to call any functions on Tick.
 5. **Implement Interface**: Add the `IMGSpatialSelectionInterface` to any Actor classes you want to be selectable.
 6. **Set Up Materials**: Use the provided `MGSpatialSelection_PPM` post-process material or create your own using the `MG Selection Mask` node.
 
@@ -89,7 +94,6 @@ The `UMGSpatialSelectionComponent` provides several categories for customization
 - `CollisionChannels`: The physics channels to overlap for actor detection (e.g., Pawn, PhysicsBody).
 - `SelectionHeight`: The fixed Z-height of the selection volume.
 - `TraceChannel`: The channel used for the ground hit (cursor deprojection).
-- `ScanRate`: Controls how often the selection scanning occurs (every N ticks). Range: 1-5.
 
 #### **Material Settings**
 - `SelectionMPC`: The Material Parameter Collection to update.
@@ -98,7 +102,9 @@ The `UMGSpatialSelectionComponent` provides several categories for customization
 - `DecayTime`: How many seconds it takes for the highlight to fade to zero after the selection is released.
 
 #### **Input & Debug**
-- `SelectionAction`: The Enhanced Input Action that triggers the selection.
+<img src="Resources/ss6.jpg" alt="plugin-spatial-selection" width="830"/>
+
+- `SelectionAction`: The Enhanced Input Action that triggers the selection. Note: You only need to bind `StartSelection` to the **Started** event and `FinishSelection` to the **Completed/Canceled** events. The component handles its own internal updates.
 - `bShowDebug`: Toggle to visualize the physical `UBoxComponent` in the world.
 - `UpdateThreshold`: Movement threshold (in units) to filter out micro-jitter from MPC updates.
 
